@@ -457,3 +457,10 @@ Spring Boot 镜像
 Tomcat 镜像
 
 Nginx 镜像
+
+
+#### Docker打镜像标签
+
+Docker hub需要的固定格式：docker\_hub\_username/image\_name:tag 你的用户名/镜像名:tag版本
+
+docker tag source\_image target\_image;   这是该命令的使用方式。

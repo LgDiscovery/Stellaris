@@ -12,7 +12,6 @@ RBAC,全称 基于角色的访问控制，解决的是：
 
 3 做什么：get/list/watch/creat/update/delete
 
-
 ## 02 RBAC的4个核心对象
 
 ① Role / ClusterRole ---权限规则本身
@@ -53,7 +52,6 @@ User (外部用户)  Group (用户组) ServiceAccount(Pod使用)
 
 生产环境90%是ServiceAccount
 
-
 ④ Verb —— 操作动作
 
 最常见的：
@@ -61,7 +59,6 @@ User (外部用户)  Group (用户组) ServiceAccount(Pod使用)
 * 读：get / list / watch
 * 写：create / update / patch
 * 删：delete
-
 
 ## 03 一个完整 RBAC 授权流程
 
