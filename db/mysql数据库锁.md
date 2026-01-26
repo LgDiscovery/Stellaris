@@ -12,10 +12,10 @@ MySQL的InnoDB引擎下，在锁的级别上一般分为两种：**共享锁（S
 
 ```
 -- MySQL8.0之前的推荐写法
-SELECTID,NAMEFROM TABLE1 WHEREID >1ANDID <10LOCKINSHAREMODE;
+SELECT ID,NAME FROM TABLE1 WHERE ID >1 AND ID <10 LOCK IN SHARE MODE;
 
 -- MySQL8.0以及之后的推荐写法
-SELECTID,NAMEFROM TABLE1 WHEREID >1ANDID <10FORSHARE;
+SELECT ID,NAME FROM TABLE1 WHERE ID >1 AND ID <10 FOR SHARE;
 ```
 
 在查询语句后面增加`LOCK IN SHARE MODE`，会对查询范围中的每行都加共享锁，这样的数据行还可以被其他事务成功申请共享锁，但是不能被申请排他锁。
@@ -27,7 +27,7 @@ SELECTID,NAMEFROM TABLE1 WHEREID >1ANDID <10FORSHARE;
 排他锁的加锁方式：
 
 ```
-SELECT ID,NAME FROM TABLE1 WHERE ID >1 AND ID <10 FOR UPDATE;
+SELECT ID,NAME FROM TABLE1 WHERE ID > 1 AND ID < 10 FOR UPDATE;
 ```
 
 在查询语句后面增加`FOR UPDATE`，会对查询命中的每条记录都加排他锁，当没有其他线程对查询结果集中的任何一行使用排他锁时，可以成功申请排他锁，否则会被阻塞。
@@ -351,12 +351,12 @@ COMMIT;
 
 ```
 -- 1. 查询数据时获取版本号
-SELECTid, name, stock, versionFROM products WHEREid = 1;
+SELECTid, name, stock, version FROM products WHERE id = 1;
 
 -- 2. 更新时检查版本号
 UPDATE products 
 SET stock = stock - 1, version = version + 1
-WHEREid = 1ANDversion = 旧版本号;
+WHEREid = 1 AND version = 旧版本号;
 
 -- 3. 检查更新是否成功
 -- 如果 update 成功记录数为0，说明数据被其他事务修改，版本号已经不再试第一步查出来的那个版本号了。
@@ -367,17 +367,17 @@ WHEREid = 1ANDversion = 旧版本号;
 ```
 -- 创建带有版本号的表
 CREATETABLE products (
-    idINT PRIMARY KEY,
-    nameVARCHAR(50),
+    id INT PRIMARY KEY,
+    name VARCHAR(50),
     stock INT,
-    versionINTDEFAULT1
+    version INT DEFAULT1
 );
 
 -- 乐观锁更新过程
-STARTTRANSACTION;
+START TRANSACTION;
 
 -- 步骤1：读取数据和版本号
-SELECTid, stock, versionFROM products WHEREid = 1;
+SELECTid, stock, version FROM products WHERE id = 1;
 -- 假设获取到：version = 5, stock = 100
 
 -- 步骤2：执行业务逻辑（在应用程序中）
@@ -385,7 +385,7 @@ SELECTid, stock, versionFROM products WHEREid = 1;
 
 -- 步骤3：更新数据并检查版本号
 UPDATE products 
-SET stock = 99, version = 6WHEREid = 1ANDversion = 5;
+SET stock = 99, version = 6 WHERE id = 1 AND version = 5;
 
 -- 步骤4：检查更新结果
 -- 如果 update 成功记录数为1，更新成功
@@ -427,7 +427,7 @@ public boolean updateProductStock(Long productId, int quantity) {
         
         // 3. 检查更新结果
         if (affectedRows > 0) {
-            returntrue; // 更新成功
+            return true; // 更新成功
         }
         
         // 4. 更新失败，短暂休眠后重试
