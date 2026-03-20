@@ -1,0 +1,21 @@
+# 1. 选择基础镜像
+FROM python:3.9-slim
+
+# 2. 设置工作目录 （容器内的代码存放路径）
+WORKDIR  /app
+
+# 3. 复制依赖文件（先复制requirements.txt 利用Docker缓存优化）
+COPY requirements.txt .
+
+# 4. 安转依赖 （国内源加速，避免下载超时）
+RUN pip install --no-cache-dir -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt
+
+# 5. 复制项目代码 (模型文件+API代码)
+COPY model_api_u.py .
+COPY pretrained_linear_regression_model.joblib .
+
+# 6.暴露端口(和API服务的9000端口一致)
+EXPOSE 9000
+
+# 7.启动名称 (生产模式，关闭 reload)
+CMD ["uvicorn","model_api_u:app","--host","0.0.0.0","--port","9000","--log-level","info"]
