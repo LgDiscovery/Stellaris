@@ -1,0 +1,7 @@
+# .dockerignore（先创建这个文件，放在Dockerfile同目录）
+__pycache__/
+*.pyc
+*.pyo
+.git/
+logs/
+wheels/

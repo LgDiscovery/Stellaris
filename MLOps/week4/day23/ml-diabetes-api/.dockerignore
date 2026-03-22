@@ -1,0 +1,23 @@
+# 排除Python缓存
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+
+# 排除构建临时文件
+wheels/
+dist/
+build/
+
+# 排除版本控制/日志
+.git/
+.gitignore
+logs/
+*.log
+
+# 排除本地配置
+.env
+*.yml
+*.md

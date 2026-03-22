@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: diabetes-api-deployment  # Deployment名称
+  namespace: mlops               # MLOps专属命名空间（需提前创建）
+  labels:
+    app: diabetes-api
+    mlops/model-version: v1.0
+    mlops/api-version: v2.0
+spec:
+  replicas: 2  # 副本数（MLOps：高可用，至少2个）
+  selector:
+    matchLabels:
+      app: diabetes-api
+  strategy:
+    rollingUpdate:  # 滚动更新（MLOps：无停机更新）
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: diabetes-api
+        mlops/model-version: v1.0
+        mlops/api-version: v2.0
+    spec:
+      containers:
+        - name: diabetes-api-container
+          # 替换为你的镜像地址（本地/私有仓库）
+          image: registry.k8s.io/diabetes-api:v1.0-v2.0-20260321
+          # 镜像拉取策略（本地镜像用Never，远程用Always）
+          imagePullPolicy: IfNotPresent
+          # 资源限制（MLOps：根据模型推理需求配置）
+          resources:
+            requests:  # 最小资源需求
+              cpu: 500m
+              memory: 512Mi
+            limits:    # 最大资源限制
+              cpu: 1000m
+              memory: 1Gi
+          # 端口配置（容器内端口，需和镜像内一致）
+          ports:
+            - containerPort: 9000
+              name: api-port
+              protocol: TCP
+          # 健康检查（MLOps：关键，确保服务可用）
+          livenessProbe:  # 存活探针（服务挂了重启Pod）
+            httpGet:
+              path: /health
+              port: api-port
+            initialDelaySeconds: 10  # 启动后10秒开始检查
+            periodSeconds: 10        # 每10秒检查一次
+            timeoutSeconds: 5        # 超时时间
+          readinessProbe: # 就绪探针（Pod就绪后才接收流量）
+            httpGet:
+              path: /health
+              port: api-port
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          # 环境变量（MLOps：配置日志/模型路径）
+          env:
+            - name: UVICORN_ACCESS_LOGS
+              value: "false"
+            - name: MODEL_PATH
+              value: /app/pretrained_linear_regression_model.joblib
+      # 镜像拉取密钥（私有仓库需配置）
+      # imagePullSecrets:
+      # - name: aliyun-acr-secret
