@@ -4,22 +4,58 @@ metadata:
   name: diabetes-api-hpa
   namespace: mlops
 spec:
+  # 副本数边界，生产环境minReplicas必须≥2，避免单点故障
   minReplicas: 2
-  maxReplicas: 5
+  maxReplicas: 5  # 最大副本数，根据集群容量和压测结果设置，禁止无限大
+  # 【核心】绑定目标Deployment/StatefulSet，必须和名称、命名空间完全匹配
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
     name: diabetes-api-deployment
+    # 【核心】扩缩容指标配置，多指标取最大副本数
   metrics:
+     # 指标1：CPU使用率，兜底指标
     - type: Resource
       resource:
         name: cpu
         target:
-          type: Utilization
-          averageUtilization: 70
+          type: Utilization # 使用率类型，基于requests计算
+          averageUtilization: 70 # 目标CPU使用率70%，生产推荐60%-70%，预留缓冲
+     # 指标2：内存使用率，兜底指标
     - type: Resource
       resource:
         name: memory
         target:
           type: Utilization
-          averageUtilization: 70
+          averageUtilization: 70 # 目标内存使用率80%
+
+    # 指标3：自定义业务指标-单Pod QPS，核心业务指标（需Prometheus+adapter支持）
+    - type: Pods
+      pods:
+        metric:
+          name: http_requests_per_second # Prometheus自定义指标名
+        target:
+          type: AverageValue # 单Pod平均值，业务指标推荐用此类型
+          averageValue: 1000 # 单Pod目标QPS 1000，根据压测结果设置
+
+  # 【核心生产配置】精细化扩缩容行为，彻底解决抖动问题
+  behavior:
+    # 扩容策略：快速扩容，保障峰值流量稳定性
+    scaleUp:
+      stabilizationWindowSeconds: 30 # 扩容稳定窗口：连续30秒超过阈值才扩容，避免临时峰值误触发
+      policies:
+        - type: Percent # 策略1：每次扩容最多增加当前副本数的100%（翻倍）
+          value: 100
+          periodSeconds: 60 # 60秒内最多执行一次
+        - type: Pods # 策略2：每次扩容最多增加5个Pod
+          value: 5
+          periodSeconds: 60
+      selectPolicy: Max # 取两个策略的最大值，优先快速扩容
+    # 缩容策略：缓慢缩容，避免流量反弹导致的频繁抖动
+    scaleDown:
+      stabilizationWindowSeconds: 300 # 缩容稳定窗口：连续5分钟低于阈值才缩容，生产推荐300-600秒
+      policies:
+        - type: Percent # 策略：每次缩容最多减少当前副本数的10%，缓慢缩容
+          value: 10
+          periodSeconds: 120 # 120秒内最多执行一次缩容
+      selectPolicy: Min # 取最小步长，优先缓慢缩容
