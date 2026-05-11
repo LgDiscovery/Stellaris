@@ -1,0 +1,23 @@
+artifact_path: file:D:/lg-go-project/Stellaris/MLOps/week5-6/day29/mlruns/2/models/m-f68ed22b12a34330b2ac7f44e06b4e3c/artifacts
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.13.9
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.8.0
+    skops_trusted_types: null
+mlflow_version: 3.10.1
+model_id: m-f68ed22b12a34330b2ac7f44e06b4e3c
+model_size_bytes: 435
+model_uuid: m-f68ed22b12a34330b2ac7f44e06b4e3c
+prompts: null
+run_id: 94dc97ce0f95432f94ebf85e5874175d
+utc_time_created: '2026-03-30 13:40:32.939522'

@@ -1,0 +1,23 @@
+server:
+  modelPort: 58080
+  jobPort: 58081
+
+database:
+  host: localhost
+  port: 5432
+  user: postgres
+  password: postgres
+  dbname: kubeai_platform
+  sslmode: disable
+
+minio:
+  endpoint: localhost:9000
+  accessKey: minioadmin
+  secretKey: minioadmin
+  bucket: kubeai_platform_models
+  useSSL: false
+
+sync:
+  job:
+    status:
+      intervalTime: 30

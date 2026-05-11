@@ -1,0 +1,30 @@
+Name: kubeai-gateway
+Host: 0.0.0.0
+Port: 58000
+Log:
+  Mode: console
+# JWT鉴权
+Auth:
+  AccessSecret: kubeai-platform-2024-secret
+# Redis配置（分布式限流必须）
+Redis:
+  Host: 127.0.0.1
+  Port: 6379
+  Pass: "redis"
+  Db: 0
+# 限流配置
+RateLimit:
+  Enabled: true
+  Rate: 100       # 60秒内最大100次请求
+  Interval: 60    # 时间窗口，单位：秒
+  KeyPrefix: "kubeai:gateway:ratelimit:" # Redis key前缀
+# 下游服务路由
+Upstreams:
+  ModelManager:
+    URL: http://model-manager:58080
+  JobScheduler:
+    URL: http://job-scheduler:58081
+  InferenceGateway:
+    URL: http://inference-gateway:58082
+  ObservabilityGateway:
+    URL: http://observability-gateway:58083

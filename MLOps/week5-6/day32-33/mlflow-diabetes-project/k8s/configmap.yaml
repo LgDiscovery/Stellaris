@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: diabetes-api-config
+data:
+  MINIO_ENDPOINT: "http://minio-service:9000"  # K8s内MinIO服务名
+  MINIO_ACCESS_KEY: "minioadmin"
+  MINIO_SECRET_KEY: "minioadmin"
+  MINIO_BUCKET: "mlflow-models"
+  MLFLOW_TRACKING_URI: "http://mlflow-service:5000"
+  MLFLOW_MODEL_NAME: "diabetes_linear_regression"
+  MODEL_VERSION: "latest"

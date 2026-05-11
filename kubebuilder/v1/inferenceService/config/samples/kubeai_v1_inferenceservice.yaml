@@ -1,0 +1,9 @@
+apiVersion: kubeai.platform.io/v1
+kind: InferenceService
+metadata:
+  labels:
+    app.kubernetes.io/name: inferenceservice
+    app.kubernetes.io/managed-by: kustomize
+  name: inferenceservice-sample
+spec:
+  # TODO(user): Add fields here
