@@ -1,0 +1,51 @@
+# ============ Python ============
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+build/
+dist/
+venv/
+.venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+
+# ============ Node / 前端 ============
+node_modules/
+.vite/
+dist/
+.next/
+out/
+*.log
+npm-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# ============ IDE ============
+# 注：本仓库已跟踪 kubeai-frontend/.idea 下若干文件。
+# 如果你想连 .idea 一起忽略，取消下面一行的注释（已跟踪的文件不会自动取消跟踪，需 git rm --cached）。
+# .idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+
+# ============ OS ============
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ============ 临时 / 备份文件 ============
+*.bak
+*.tmp
+*~
+*.orig
+*.rej
+
+# ============ 本地环境 ============
+.env
+.env.local
+*.local
